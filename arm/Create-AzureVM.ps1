@@ -1,0 +1,1 @@
+New-AzureRmResourceGroupDeployment -Name 'SimpleVMDeployment' -ResourceGroupName MyResourceGroup -TemplateUri https://raw.githubusercontent.com/azure/azure-quickstart-templates/master/101-simple-windows-vm/azuredeploy.json -newStorageAccountname mystorageaccount -adminUsername myuser -adminPassword 'Myp#44wrd' –dnsNameForPublicIP 'dnsname' –windowsOsVersion '2012-R2-Datacenter
