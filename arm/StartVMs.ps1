@@ -4,7 +4,7 @@ workflow StartVMs {
 		$ConnectionAssetName = "AzureAutoCert"
 
         $FirstBatch = "isbdwscm01","isbdwsmtrx01","isbdwsrds01","isbdwsfs01","M42GW01"
-        $SecondBatch = "isbdwsrds02","isbdwsappv01","isbdwsapp01","isbdwsweb01","isbdwsweb02"
+        $SecondBatch = "isbdwsrds02","isbdwsappv01","isbdwsapp01","isbdwsweb01","isbdwsweb02","isbdwsliquit01"
 		
 		# Get the connection
 		$connection = Get-AutomationConnection -Name $connectionAssetName        
