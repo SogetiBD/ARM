@@ -31,8 +31,8 @@ workflow StartRMVMs
         ForEach ($VM in $VMs)
         {
             $VMStatus = Get-AzureRmVM -ResourceGroupName $VM.ResourceGroupName -Name $VM.Name -Status|select -ExpandProperty Statuses | ?{ $_.Code -match "PowerState" } | select -ExpandProperty displaystatus
-            Write-Output("Status of machine " + $VM.Name + " is: " + $VMStatus)
-            If ($VMStatus -ne "VM running" -And $VMsIncluded -Contains $VM.Name)  
+            Write-Output("Status of machine $($VM.Name) is: $VMStatus")
+            If (($VMStatus -ne "Running") -And ($VMsIncluded -Contains $VM.Name))  
               {
                 Write-Output("Starting VM " + $VM.Name)
                 Start-AzureRmVm -ResourceGroupName $VM.ResourceGroupName -Name $Vm.Name -Force
