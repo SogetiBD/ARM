@@ -2,7 +2,7 @@ workflow StartRMVMs
 {
     Write-Output ("Launching script")
         
-        $VMsIncluded=("XA-Controller","XA-VDA")	
+        $VMsIncluded=("isbdws2rds03","isbdws2file01","isbdwsrds04")	
 		$connectionName = "AzureRunAsConnection"
 		try
 		{
@@ -35,7 +35,7 @@ workflow StartRMVMs
             If (($VMStatus -ne "Running") -And ($VMsIncluded -Contains $VM.Name))  
               {
                 Write-Output("Starting VM " + $VM.Name)
-                Start-AzureRmVm -ResourceGroupName $VM.ResourceGroupName -Name $Vm.Name -Force
+                Start-AzureRmVm -ResourceGroupName $VM.ResourceGroupName -Name $Vm.Name
               }
             Else
               {
