@@ -3,9 +3,11 @@ workflow StartVMs {
 	inlineScript {
 		$ConnectionAssetName = "AzureAutoCert"
 
-        $FirstBatch = "isbdwscm01","isbdwsmtrx01","isbdwsrds01","isbdwsfs01","M42GW01"
-        $SecondBatch = "isbdwsrds02","isbdwsappv01","isbdwsapp01","isbdwsweb01","isbdwsweb02","isbdwsliquit01"
-		
+        #$FirstBatch = "isbdwscm01","isbdwsmtrx01","isbdwsrds01","isbdwsfs01"
+        #$SecondBatch = "isbdwsrds02","isbdwsappv01","isbdwsapp01","isbdwsweb01","isbdwsweb02","isbdwsliquit01"
+		$FirstBatch="isbdwsweb01","isbdwsweb02"
+        $SecondBatch="isbdwsliquit01"
+
 		# Get the connection
 		$connection = Get-AutomationConnection -Name $connectionAssetName        
 		
@@ -48,8 +50,8 @@ workflow StartVMs {
             
 		}
 
-        #Wait 2.5 minutes to start first servers
-        Start-Sleep -s 150
+        #Wait 1 minute to start next servers
+        Start-Sleep -s 60
 
         Write-Output("--> Starting Second set of machines")
 		ForEach ($VM in $VMs)
