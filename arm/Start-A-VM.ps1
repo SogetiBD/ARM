@@ -1,7 +1,6 @@
 workflow Start-A-VM
 {
-    CmdletBinding()]
-        param(
+    param(
             $RGName,
             $VMName
         )
@@ -38,16 +37,15 @@ workflow Start-A-VM
 		}
 
         $VMStatus = Get-AzureRmVM -ResourceGroupName $RGName -Name $VMName -Status|select -ExpandProperty Statuses | ?{ $_.Code -match "PowerState" } | select -ExpandProperty displaystatus
-        Write-Output("Status of machine $($VM.Name) is: $VMStatus")
-        If (($VMStatus -ne "Running")  
+        Write-Output("Status of machine $VMName is: $VMStatus")
+        If ($VMStatus -ne "Running")  
             {
-                Write-Output("Starting VM " + $VM.Name)
-                Start-AzureRmVm -ResourceGroupName $VM.ResourceGroupName -Name $Vm.Name
+                Write-Output("Starting VM " + $VMName)
+                Start-AzureRmVm -ResourceGroupName $RGName -Name $VmName
             }
           Else
             {
-                Write-Output ($VM.Name + " already is running")
+                Write-Output ($VMName + " already is running")
             }
-        }
 
 }
