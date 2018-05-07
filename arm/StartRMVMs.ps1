@@ -1,8 +1,9 @@
 workflow StartRMVMs
 {
     Write-Output ("Launching script")
-        
-        $VMsIncluded=("isbdws2rds03","isbdws2file01","isbdwsrds04")	
+     #saved: "isbdws2rds03","isbdws2file01","isbdwsrds04",   
+        $FirstBatch=("ssw-rds01","ssw-file01","ssw-portal")	
+        $SecondBatch=("ssw-rds03","isbdwsmtrx03")
 		$connectionName = "AzureRunAsConnection"
 		try
 		{
@@ -28,11 +29,32 @@ workflow StartRMVMs
 		}
 
         $VMs=Get-AzureRmVm
-        ForEach ($VM in $VMs)
+        ForEach -Parallel ($VM in $VMs)
         {
-            $VMStatus = Get-AzureRmVM -ResourceGroupName $VM.ResourceGroupName -Name $VM.Name -Status|select -ExpandProperty Statuses | ?{ $_.Code -match "PowerState" } | select -ExpandProperty displaystatus
+            $VMStatus = InlineScript {
+                $GetStatus=Get-AzureRmVM -ResourceGroupName $Using:VM.ResourceGroupName -Name $Using:VM.Name -Status|select -ExpandProperty Statuses | ?{ $_.Code -match "PowerState" } | select -ExpandProperty displaystatus
+                $GetStatus
+            }
             Write-Output("Status of machine $($VM.Name) is: $VMStatus")
-            If (($VMStatus -ne "Running") -And ($VMsIncluded -Contains $VM.Name))  
+            If (($VMStatus -ne "VM running") -And ($FirstBatch -Contains $VM.Name))  
+              {
+                Write-Output("Starting VM " + $VM.Name)
+                Start-AzureRmVm -ResourceGroupName $VM.ResourceGroupName -Name $Vm.Name
+              }
+            Else
+              {
+                  Write-Output ($VM.Name + " is excluded for startup")
+              }
+        }
+
+        ForEach -Parallel ($VM in $VMs)
+        {
+            $VMStatus = InlineScript {
+                $GetStatus=Get-AzureRmVM -ResourceGroupName $Using:VM.ResourceGroupName -Name $Using:VM.Name -Status|select -ExpandProperty Statuses | ?{ $_.Code -match "PowerState" } | select -ExpandProperty displaystatus
+                $GetStatus
+            }
+            Write-Output("Status of machine $($VM.Name) is: $VMStatus")
+            If (($VMStatus -ne "VM running") -And ($SecondBatch -Contains $VM.Name))  
               {
                 Write-Output("Starting VM " + $VM.Name)
                 Start-AzureRmVm -ResourceGroupName $VM.ResourceGroupName -Name $Vm.Name
