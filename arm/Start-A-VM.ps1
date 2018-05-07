@@ -40,7 +40,7 @@ workflow Start-A-VM
             $GetStatus=Get-AzureRmVM -ResourceGroupName $Using:RGName -Name $Using:VMName -Status|select -ExpandProperty Statuses | ?{ $_.Code -match "PowerState" } | select -ExpandProperty displaystatus
             $GetStatus
         }
-        Write-Output("Status of machine $VMName is: " + $VMStatus)
+        Write-Output("Status of machine $VMName is: $VMStatus")
         If ($VMStatus -ne "VM running")  
             {
                 Write-Output("Starting VM " + $VMName)
