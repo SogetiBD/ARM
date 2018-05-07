@@ -1,9 +1,32 @@
 workflow Start-A-VM
 {
-    param(
-            $RGName,
-            $VMName
-        )
+    [CmdletBinding()]
+    Param
+        ([object]$WebhookData) 
+    
+    $VerbosePreference = 'continue'
+
+    # If runbook was called from Webhook, WebhookData will not be null.
+    if ($WebHookData){
+        # Collect properties of WebhookData
+        $WebhookName     =     $WebHookData.WebhookName
+        $WebhookHeaders  =     $WebHookData.RequestHeader
+        $WebhookBody     =     $WebHookData.RequestBody
+
+        # Collect individual headers. Input converted from JSON.
+        $From = $WebhookHeaders.From
+        $Input = (ConvertFrom-Json -InputObject $WebhookBody)
+        Write-Verbose "WebhookBody: $Input"
+        Write-Output -InputObject ('Runbook started from webhook {0} by {1}.' -f $WebhookName, $From)
+    }
+    else
+    {
+        Write-Error -Message 'Runbook was not started from Webhook' -ErrorAction stop
+    }
+
+    $RGName=$Input.ResourceGroup
+    $VMName=$Input.VMName
+        
 
         Write-Output ("Launching script Start-A-VM, using the following parameters:")
         Write-Output ("RG Name : $RGName")
