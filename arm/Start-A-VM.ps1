@@ -37,7 +37,7 @@ workflow Start-A-VM
 		}
 
         $VMStatus = inlineScript {
-            $GetStatus=Get-AzureRmVM -ResourceGroupName $RGName -Name $VMName -Status|select -ExpandProperty Statuses | ?{ $_.Code -match "PowerState" } | select -ExpandProperty displaystatus
+            $GetStatus=Get-AzureRmVM -ResourceGroupName $Using:RGName -Name $Using:VMName -Status|select -ExpandProperty Statuses | ?{ $_.Code -match "PowerState" } | select -ExpandProperty displaystatus
             $GetStatus
         }
         Write-Output("Status of machine $VMName is: " + $VMStatus)
