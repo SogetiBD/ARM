@@ -1,8 +1,9 @@
 workflow Start-A-VM
 {
-    [CmdletBinding()]
-    Param
-        ([object]$WebhookData) 
+    #[CmdletBinding()]
+    param (
+        [object]$WebhookData
+    ) 
     
     $VerbosePreference = 'continue'
 
@@ -15,8 +16,8 @@ workflow Start-A-VM
 
         # Collect individual headers. Input converted from JSON.
         $From = $WebhookHeaders.From
-        $Input = (ConvertFrom-Json -InputObject $WebhookBody)
-        Write-Verbose "WebhookBody: $Input"
+        $VMData=(ConvertFrom-Json -InputObject $WebhookBody)
+        Write-Verbose "WebhookBody: $VMData"
         Write-Output -InputObject ('Runbook started from webhook {0} by {1}.' -f $WebhookName, $From)
     }
     else
@@ -24,13 +25,14 @@ workflow Start-A-VM
         Write-Error -Message 'Runbook was not started from Webhook' -ErrorAction stop
     }
 
-    $RGName=$Input.ResourceGroup
-    $VMName=$Input.VMName
+    $RGName=$VMData.ResourceGroup
+    $VMName=$VMData.VMName
+    $Action=$VMData.Action
         
-
         Write-Output ("Launching script Start-A-VM, using the following parameters:")
         Write-Output ("RG Name : $RGName")
         Write-Output ("VM Name : $VMName")
+        Write-Output ("Action : $Action")
         Write-Output ("-------------------------------------------------------------")
      
 		$connectionName = "AzureRunAsConnection"
@@ -64,14 +66,31 @@ workflow Start-A-VM
             $GetStatus
         }
         Write-Output("Status of machine $VMName is: $VMStatus")
-        If ($VMStatus -ne "VM running")  
-            {
-                Write-Output("Starting VM " + $VMName)
-                Start-AzureRmVm -ResourceGroupName $RGName -Name $VmName
-            }
-          Else
-            {
-                Write-Output ($VMName + " already is running")
-            }
+        
+        If ($Action -eq "Start") 
+        {
+            If ($VMStatus -ne "VM running")  
+                {
+                    Write-Output("Starting VM " + $VMName)
+                    Start-AzureRmVm -ResourceGroupName $RGName -Name $VmName
+                }
+            Else
+                {
+                    Write-Output ($VMName + " already is running.")
+                }
+        }
+
+        If ($Action -eq "Stop") 
+        {
+            If ($VMStatus -ne "VM deallocated")  
+                {
+                    Write-Output("Stopping VM " + $VMName)
+                    Start-AzureRmVm -ResourceGroupName $RGName -Name $VmName
+                }
+            Else
+                {
+                    Write-Output ($VMName + " already is stopped.")
+                }
+        }      
 
 }
