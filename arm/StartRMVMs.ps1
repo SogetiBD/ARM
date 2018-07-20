@@ -3,7 +3,7 @@ workflow StartRMVMs
     Write-Output ("Launching script")
      #saved: "isbdws2rds03","isbdws2file01","isbdwsrds04",   
         $FirstBatch=("ssw-rds01","ssw-file01","ssw-portal")	
-        $SecondBatch=("ssw-rds03","isbdwsmtrx03","ssw-eptst")
+        $SecondBatch=("ssw-rds03","isbdwsmtrx03")
 		$connectionName = "AzureRunAsConnection"
 		try
 		{
